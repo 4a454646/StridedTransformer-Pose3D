@@ -1,0 +1,123 @@
+
+
+
+# trainable params: 2000 test: 0.85 acc, 0.3 loss, (1.05, 0.85)
+# trainable params: 5000 test: 0.77 acc, 0.5 loss, (1.45, 1.16)
+# trainable params: 10000 test: 0.82 acc, 0.6 loss, (1.06, 1.11)
+# trainable params: 20000 test: 0.8 acc, 0.6 loss, (1.61, 2.01)
+# trainable params: 40000 test: 0.81 acc, 0.5 loss, (1.33, 1.37)
+# trainable params: 60000 test: 0.82 acc, 0.4 loss, (0.96, 0.94)
+
+# best seems to be ~20000
+# how about 30000? 0.82 acc, 0.3 loss, (bad, bad)
+# now try: 
+# 20000 stopped working so well
+# i forgot the layout , time for layout testing
+# 90-60-90-60-30: bad
+# 60-90-90-60-30: slightly better
+# 120-120-120: bad
+# 120-60-120: very bad
+# high unit#, low layer#:
+# high layer#, low unit#:
+# super high layer#, super low unit#
+# super high unit#, super low layer#
+
+# try
+# my_init = initializers.RandomNormal(mean=0.0, stddev = 0.05, seed = None) 
+
+# adadelta
+# 30-30-30-30-30, no regularization, 4.0 LR: no bueno
+# 30-30-30-30-30, no regularization, 2.0 LR: omega over
+# 30-30-30-30-30, no regularization, 1.0 LR: looowwww
+# 30-30-30-30-30, no regularization, 0.5 LR: droppp
+# 30-30-30-30-30, no regularization, 0.25 LR: 33 lock
+# 30-30-30-30-30, no regularization, 0.1 LR: jumpy
+# 30-30-30-30-30, no regularization, 0.01 LR: down
+# 30-30-30-30-30, no regularization, 0.001 LR: working together, significant gap
+
+# 30-30-30, no regularization, 0.5LR: lots of overfitting
+# 30-30-30, no regularization, 1.0LR: lots of overfitting
+# 30-30-30, no regularization, 2.0LR: lots of overfitting
+# 30-30-30, no regularization, 0.1LR: lots of overfitting, but not crazy jumps
+# 30-30-30, no regularization, 0.25LR: lots of overfitting
+
+
+# 30-30, no regularization, 4.0 LR: super wild swings, decent baseline
+# 30-30, no regularization, 2.0 LR: wild swings + overfitting
+# 30-30, no regularization, 1.0 LR: drop
+# 30-30, no regularization, 0.5 LR: drop, pretty bad
+# 30-30, no regularization, 0.25 LR: very goodbaseline, drops off though
+# 30-30, no regularization, 0.1 LR: steady increase but significantly lower
+# 30-30, no regularization, 0.01 LR: steady increase but significantly higher
+# 30-30, no regularization, 0.001 LR: dipper
+
+# 30, no regularization, 4.0 LR: jumpy bit generally ok?
+# 30, no regularization, 2.0 LR: low
+# 30, no regularization, 1.0 LR: loss looks promising for over time
+# 30, no regularization, 0.5 LR: low
+# 30, no regularization, 0.25 LR: low
+# 30, no regularization, 0.1 LR: very promising
+# 30, no regularization, 0.01 LR: val much higher than acc?
+# 30, no regularization, 0.001 LR: going downnn
+
+
+# most promising:
+#  
+# 30-30-30-30-30, no regularization, 0.001 LR: 
+# very good, but sharply dies after ~15 epochs
+# 30-30, no regularization, 0.25 LR: 
+# falls before 10 epochs
+# 30-30, no regularization, 0.1 LR:
+# stabilizes 40%
+# 30-30, no regularization, 0.01 LR:
+# initially good but keeps dropping, all the way to 10%
+# 30, no regularization, 0.1 LR:
+# very very spiky, loss is dropping
+# 30, no regularization, 0.01 LR:
+# plunges down, loss is slowly dropping
+
+
+
+# refining: 
+# 30-30-30-30-30, no regularization, 0.001 LR: 
+# really good val/acc, but not good testing (lots of 0 guesses), overfits past ~25 epochs, ends 70/35
+# 0.002 follows much better than 0.001, overtfits past 50 epochs
+# 0.003: falls after 30
+# 0.004: absolutely terrible
+
+# best: 0.002
+
+# 0.0022:
+# 0.0018:
+
+# re-running with 0.002: seems very bad
+# maybe it was 0.0002 that was good??
+# YES, it was 0.0002 that was good, need to retry with nearby values
+
+
+# 0.0002 w/ 5000 epochs: very good up until ~500, where it takes a sharp plunge
+
+# 0.00022 w/ 750 epochs: 
+# 0.00018 w/ 750 epochs:
+
+
+
+# to try: 75-30 (or any other 60/90 node combo with ~5000 trainable params)
+# DOESNT WORK
+
+
+# best candidate for further refining:
+# 5x30, 0.0002LR
+# big drop at ~500 epochs, try staircase lr schedule
+
+# starting: 0.0002, steps: 480 * 834 (480 epochs), multipler: 0.8
+
+# 30x5 0.0002 lr doesn't seem to work well anymore
+# need to try modifying # of nodes
+# maybe 30x5 0.000195
+# works super super well
+
+# VERY BIG PROBLEM: val set was literally missing any test categories for bad, so need to re-try everything
+# 30x5 0.000195 is pretty good
+# 30x5 0.00022 is slightly better
+# 30x5 0.00025

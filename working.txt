@@ -1,0 +1,1 @@
+ffmpeg -hwaccel cuda -i "hot dog mile.mp4" -c:v mpeg4 -c:a pcm_s16le -q:v 0 "please.mov" 
